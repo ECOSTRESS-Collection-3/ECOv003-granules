@@ -1,6 +1,7 @@
 PACKAGE_NAME = ECOv003-granules
 ENVIRONMENT_NAME = $(PACKAGE_NAME)
 DOCKER_IMAGE_NAME = $(shell echo $(PACKAGE_NAME) | tr '[:upper:]' '[:lower:]')
+PYTHON_VERSION = $(if $(PYTHON),$(PYTHON),3.13)
 
 clean:
 	rm -rf *.o *.out *.log
@@ -34,8 +35,10 @@ reinstall:
 	make uninstall
 	make install
 
+# Create a new Conda environment with the specified Python version
 environment:
-	mamba create -y -n $(ENVIRONMENT_NAME) -c conda-forge python=3.10
+	# Create a Conda environment with the specified name and Python version
+	mamba create -y -n $(ENVIRONMENT_NAME) -c conda-forge python=$(PYTHON_VERSION)
 
 remove-environment:
 	mamba env remove -y -n $(ENVIRONMENT_NAME)
