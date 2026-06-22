@@ -1,10 +1,12 @@
-# ECOSTRESS Collection 3 Data Product Granule Encapsulation Classes
+# ECOSTRESS Collection 3 Granule Utilities
 
 [![CI](https://github.com/ECOSTRESS-Collection-3/ECOv003-granules/actions/workflows/ci.yml/badge.svg)](https://github.com/ECOSTRESS-Collection-3/ECOv003-granules/actions/workflows/ci.yml)
 
 [Gregory H. Halverson](https://github.com/gregory-halverson-jpl) (they/them)<br>
 [gregory.h.halverson@jpl.nasa.gov](mailto:gregory.h.halverson@jpl.nasa.gov)<br>
 NASA Jet Propulsion Laboratory 329G
+
+ECOv003-granules is a Python library for working with ECOSTRESS Collection 3 data products. It opens granule files, identifies the product type, and exposes the metadata, geometry, and raster layers through product-specific wrapper classes.
 
 ## ECOSTRESS Granules Data Layers
 
