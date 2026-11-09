@@ -1,5 +1,6 @@
-from os.path import basename, splitext
+from os.path import basename, exists, isdir, isfile, splitext
 import logging
+import zipfile
 
 import colored_logging as cl
 
@@ -7,6 +8,7 @@ from .granule import ECOSTRESSGranule
 from .L1CTRAD import L1CTRAD
 from .L2TLSTE import L2TLSTE
 from .L2TSTARS import L2TSTARS
+from .L3TETAUX import L3TETAUX
 from .L3TJET import L3TJET
 from .L3TMET import L3TMET
 from .L3TSM import L3TSM
@@ -23,31 +25,32 @@ def open_granule(
         **kwargs) -> ECOSTRESSGranule:
     filename_base = splitext(basename(filename))[0]
 
-    if filename_base.startswith("ECOv003_L1CT_RED"):
-        logger.info(f"loading Collection 2 L1CT RAD: {cl.file(filename)}")
-        return L1CTRAD(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L2T_LSTE"):
-        logger.info(f"loading Collection 2 L2T LSTE: {cl.file(filename)}")
-        return L2TLSTE(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L2T_STARS"):
-        logger.info(f"loading Collection 2 L2T STARS: {cl.file(filename)}")
-        return L2TSTARS(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L3T_JET"):
-        logger.info(f"loading Collection 2 L3T JET: {cl.file(filename)}")
-        return L3TJET(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L3T_MET"):
-        logger.info(f"loading Collection 2 L3T MET: {cl.file(filename)}")
-        return L3TMET(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L3T_SM"):
-        logger.info(f"loading Collection 2 L3T SM: {cl.file(filename)}")
-        return L3TSM(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L3T_SEB"):
-        logger.info(f"loading Collection 2 L3T SEB: {cl.file(filename)}")
-        return L3TSEB(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L4T_ESI"):
-        logger.info(f"loading Collection 2 L4T ESI: {cl.file(filename)}")
-        return L4TESI(filename, **kwargs)
-    elif filename_base.startswith("ECOv003_L4T_WUE"):
-        logger.info(f"loading Collection 2 L4T WUE: {cl.file(filename)}")
-        return L4TWUE(filename, **kwargs)
-    
+    products = (
+        ("ECOv003_L1CT_RAD", L1CTRAD, "L1CT RAD"),
+        ("ECOv003_L1CT_RED", L1CTRAD, "L1CT RAD"),
+        ("ECOv003_L2T_LSTE", L2TLSTE, "L2T LSTE"),
+        ("ECOv003_L2T_STARS", L2TSTARS, "L2T STARS"),
+        ("ECOv003_L3T_ETAUX", L3TETAUX, "L3T ETAUX"),
+        ("ECOv003_L3T_JET", L3TJET, "L3T JET"),
+        ("ECOv003_L3T_MET", L3TMET, "L3T MET"),
+        ("ECOv003_L3T_SM", L3TSM, "L3T SM"),
+        ("ECOv003_L3T_SEB", L3TSEB, "L3T SEB"),
+        ("ECOv003_L4T_ESI", L4TESI, "L4T ESI"),
+        ("ECOv003_L4T_WUE", L4TWUE, "L4T WUE"),
+    )
+
+    for product_prefix, granule_class, product_name in products:
+        if filename_base.startswith(product_prefix):
+            if not exists(filename):
+                raise FileNotFoundError(f"granule does not exist: {filename}")
+
+            if not isdir(filename):
+                if not isfile(filename) or splitext(filename)[1].lower() != ".zip":
+                    raise ValueError(f"granule path must be a directory or ZIP archive: {filename}")
+                if not zipfile.is_zipfile(filename):
+                    raise ValueError(f"invalid granule ZIP archive: {filename}")
+
+            logger.info(f"loading Collection 3 {product_name}: {cl.file(filename)}")
+            return granule_class(filename, **kwargs)
+
+    raise ValueError(f"unsupported granule product: {filename_base}")

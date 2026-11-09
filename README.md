@@ -8,6 +8,8 @@ NASA Jet Propulsion Laboratory 329G
 
 ECOv003-granules is a Python library for working with ECOSTRESS Collection 3 data products. It opens granule files, identifies the product type, and exposes the metadata, geometry, and raster layers through product-specific wrapper classes.
 
+`open_granule(path)` supports either an extracted granule directory or a ZIP archive. It recognizes the Collection 3 `L1CT_RAD`, `L2T_LSTE`, `L2T_STARS`, `L3T_ETAUX`, `L3T_JET`, `L4T_ESI`, and `L4T_WUE` products, and raises an explicit error for unsupported products, missing paths, invalid path types, or malformed ZIP archives. Tiled granules expose available TIFF layer filenames and variables from either storage format; an empty granule has no discovered layers.
+
 ## ECOSTRESS Granules Data Layers
 
 This document provides a detailed listing of the data layers available in the ECOSTRESS granules for various products, including L2T STARS, L3T ETAUX, L3T JET, L4T ESI, and L4T WUE.

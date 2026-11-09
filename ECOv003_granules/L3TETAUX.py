@@ -12,7 +12,11 @@ class L3TETAUX(ECOSTRESSTiledGranule):
 
     @property
     def RH(self) -> Raster:
-        return self.variable("Ta")
+        return self.variable("RH")
+
+    @property
+    def Rg(self) -> Raster:
+        return self.variable("Rg")
 
     @property
     def Rn(self) -> Raster:
@@ -21,3 +25,11 @@ class L3TETAUX(ECOSTRESSTiledGranule):
     @property
     def SM(self) -> Raster:
         return self.variable("SM")
+
+    @property
+    def cloud(self) -> Raster:
+        return self.variable("cloud")
+
+    @property
+    def water(self) -> Raster:
+        return self.variable("water")
