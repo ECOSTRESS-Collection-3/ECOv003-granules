@@ -114,6 +114,10 @@ class L2TSTARS(ECOSTRESSTiledGranule, L2STARSGranule):
 
     VARIABLE_CMAPS = VARIABLE_CMAPS
 
+    @property
+    def product(self) -> str:
+        return self._PRODUCT_NAME
+
     def __init__(
             self,
             product_location: str = None,

@@ -347,7 +347,6 @@ class ECOSTRESSTiledGranule(ECOSTRESSGranule):
     #             f"for granule: {tile_granule_name}"
     #         )
     #
-    #         timer = Timer()
     #
     #         image = gridded_granule.variable(
     #             variable,
@@ -475,9 +474,22 @@ class ECOSTRESSTiledGranule(ECOSTRESSGranule):
 
     @property
     def filenames(self) -> List[str]:
-        # return glob(join(self.product_directory, "*.tif"))
-        with zipfile.ZipFile(self.product_filename) as zip_file:
-            return zip_file.namelist()
+        if self.is_zip:
+            try:
+                with zipfile.ZipFile(self.product_filename) as zip_file:
+                    return sorted(
+                        posixpath.basename(filename.rstrip("/"))
+                        for filename in zip_file.namelist()
+                        if not filename.endswith("/")
+                    )
+            except zipfile.BadZipFile as error:
+                raise ValueError(f"invalid granule ZIP archive: {self.product_filename}") from error
+
+        return [
+            filename
+            for filename in sorted(os.listdir(self.product_location))
+            if os.path.isfile(join(self.product_location, filename))
+        ]
 
     @property
     def layer_filenames(self) -> List[str]:
@@ -489,12 +501,15 @@ class ECOSTRESSTiledGranule(ECOSTRESSGranule):
         ]
 
     def URI_for_filename(self, filename: str) -> str:
+        filename = posixpath.basename(filename)
         return f"zip://{abspath(expanduser(self.product_filename))}!/{self.granule_name}/{filename}"
 
     @property
     def layer_URIs(self) -> List[str]:
         return [
-            self.URI_for_filename(filename)
+            join(self.product_location, filename)
+            if not self.is_zip
+            else self.URI_for_filename(filename)
             for filename
             in self.layer_filenames
         ]
@@ -516,7 +531,7 @@ class ECOSTRESSTiledGranule(ECOSTRESSGranule):
 
     @property
     def is_zip(self) -> bool:
-        return self.product_location.endswith(".zip")
+        return self.product_location.lower().endswith(".zip")
 
     def layer_URI(self, variable: str) -> Optional[str]:
         # return join(self.product_directory, f"{self.granule_name}_{variable}.tif")

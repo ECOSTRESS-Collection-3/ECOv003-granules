@@ -4,6 +4,7 @@ from abc import abstractmethod
 from datetime import datetime, date
 from os import makedirs
 from os.path import splitext, basename, abspath, expanduser, dirname, exists
+from time import perf_counter
 from typing import Union, List
 
 import PIL
@@ -15,8 +16,6 @@ from shapely import Polygon
 
 import colored_logging as cl
 from rasters import RasterGeometry, BBox, Point, Raster
-
-from .timer import Timer
 
 import logging
 
@@ -296,7 +295,7 @@ class ECOSTRESSGranule:
         quality = self.granule_preview_quality
         logger.info(
             f"started writing PNG browse image with cmap {cl.name(cmap.name)} shape {cl.val(shape)} and quality {cl.val(quality)}: {cl.file(PNG_filename)}")
-        timer = Timer()
+        start_time = perf_counter()
 
         # image = self.variable(self.primary_variable)
         # print("self.browse_cmap")
@@ -306,7 +305,8 @@ class ECOSTRESSGranule:
 
         browse_image = self.get_browse_image(cmap=cmap)
         browse_image.save(PNG_filename, format="png", quality=self.granule_preview_quality)
-        logger.info(f"finished writing PNG browse image ({cl.time(timer)})")
+        duration = perf_counter() - start_time
+        logger.info(f"finished writing PNG browse image ({cl.time(f'{duration:0.2f}')})")
 
         if not exists(PNG_filename):
             raise IOError(f"unable to create PNG browse image: {PNG_filename}")

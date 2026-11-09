@@ -1,10 +1,14 @@
-# ECOSTRESS Collection 3 Data Product Granule Encapsulation Classes
+# ECOSTRESS Collection 3 Granule Utilities
 
 [![CI](https://github.com/ECOSTRESS-Collection-3/ECOv003-granules/actions/workflows/ci.yml/badge.svg)](https://github.com/ECOSTRESS-Collection-3/ECOv003-granules/actions/workflows/ci.yml)
 
 [Gregory H. Halverson](https://github.com/gregory-halverson-jpl) (they/them)<br>
 [gregory.h.halverson@jpl.nasa.gov](mailto:gregory.h.halverson@jpl.nasa.gov)<br>
 NASA Jet Propulsion Laboratory 329G
+
+ECOv003-granules is a Python library for working with ECOSTRESS Collection 3 data products. It opens granule files, identifies the product type, and exposes the metadata, geometry, and raster layers through product-specific wrapper classes.
+
+`open_granule(path)` supports either an extracted granule directory or a ZIP archive. It recognizes the Collection 3 `L1CT_RAD`, `L2T_LSTE`, `L2T_STARS`, `L3T_ETAUX`, `L3T_JET`, `L4T_ESI`, and `L4T_WUE` products, and raises an explicit error for unsupported products, missing paths, invalid path types, or malformed ZIP archives. Tiled granules expose available TIFF layer filenames and variables from either storage format; an empty granule has no discovered layers.
 
 ## ECOSTRESS Granules Data Layers
 
